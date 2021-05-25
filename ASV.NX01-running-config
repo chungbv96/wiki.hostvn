@@ -231,11 +231,9 @@ vlan 20
   name SERVER-TEST1
 vlan 30
   name SERVER_DMZ
-vlan 88
-  name keepalive
 vrf context keepalive
 vrf context management
-vrf context test
+vrf context vpc
 no port-channel load-balance resilient
 hardware profile portmode 64x10G
 
@@ -243,7 +241,7 @@ no hardware profile ecmp resilient
 system dme enable
 vpc domain 1
   peer-switch
-  peer-keepalive destination 192.168.1.2 source 192.168.1.1 vrf test
+  peer-keepalive destination 192.168.1.2 source 192.168.1.1 vrf vpc
   peer-gateway
   auto-recovery
 
@@ -268,13 +266,6 @@ interface Vlan30
     priority 105
     address 30.30.30.254 
     no shutdown
-
-interface Vlan88
-  no shutdown
-  vrf member keepalive
-  no ip redirects
-  ip address 22.1.1.1/30
-  no ipv6 redirects
 
 interface port-channel10
   description ***VPC PEER LINK***
@@ -439,7 +430,7 @@ interface Ethernet1/52/4
 interface mgmt0
   description Management Only 
   vrf member management
-  ip address 192.168.160.101/24
+  ip address 10.10.10.251/24
 line console
 line vty
 boot nxos bootflash:/nxos.7.0.3.I7.8_compact.bin 
