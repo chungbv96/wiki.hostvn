@@ -1,7 +1,7 @@
 
 !Command: show running-config
-!No configuration change since last restart
-!Time: Mon May 24 07:14:07 2021
+!Running configuration last done at: Thu May 27 03:49:04 2021
+!Time: Thu May 27 03:52:41 2021
 
 version 7.0(3)I7(8) Bios:version 4.5.0 
 hostname ASV.NX02
@@ -231,9 +231,12 @@ rmon event 5 log trap public description INFORMATION(5) owner PMON@INFO
 
 vlan 1
 vlan 20
-  name SERVER-TEST1
+  name LOCAL.PRODUCT
+vlan 25
+  name EMAIL
 vlan 30
-  name SERVER_DMZ
+  name SHAREHOSTING
+vrf context keepalive
 vrf context management
 vrf context vpc
 no port-channel load-balance resilient
@@ -246,12 +249,12 @@ vpc domain 1
   peer-keepalive destination 192.168.1.1 source 192.168.1.2 vrf vpc
   peer-gateway
   auto-recovery
+  ip arp synchronize
 
 
 interface Vlan1
 
 interface Vlan20
-  description Server Farm
   no shutdown
   no ip redirects
   ip address 20.20.20.2/24
@@ -260,9 +263,18 @@ interface Vlan20
     address 20.20.20.254 
     no shutdown
 
+interface Vlan25
+  no shutdown
+  ip address 25.25.25.2/24
+  vrrp 25
+    address 25.25.25.254 
+    no shutdown
+
 interface Vlan30
   no shutdown
+  no ip redirects
   ip address 30.30.30.2/24
+  no ipv6 redirects
   vrrp 30
     address 30.30.30.254 
     no shutdown
@@ -277,16 +289,19 @@ interface port-channel20
   switchport access vlan 20
   vpc 20
 
+interface port-channel25
+  switchport access vlan 25
+  vpc 25
+
 interface port-channel30
   switchport access vlan 30
   vpc 30
 
 interface Ethernet1/1
-  switchport access vlan 88
 
 interface Ethernet1/2
   no switchport
-  vrf member test
+  vrf member vpc
   ip address 192.168.1.2/30
 
 interface Ethernet1/3
@@ -298,8 +313,12 @@ interface Ethernet1/4
   channel-group 20 mode active
 
 interface Ethernet1/5
+  switchport access vlan 25
+  channel-group 25 mode active
 
 interface Ethernet1/6
+  switchport access vlan 25
+  channel-group 25 mode active
 
 interface Ethernet1/7
   switchport access vlan 30
